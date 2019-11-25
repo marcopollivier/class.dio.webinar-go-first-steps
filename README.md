@@ -1,4 +1,4 @@
-# Introdução a Linguagem de Programação Go - Webiner - Digital Innovation One
+# Introdução a Linguagem de Programação Go - Webinar
 
 Este projeto foi criado com o objetivo de dar suporte ao Webinar totalmente gratuito feito em parceria com 
 a [Digital Innovation One](https://digitalinnovation.one/) sobre 
