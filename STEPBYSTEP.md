@@ -205,11 +205,11 @@ dependência do driver do Postgres.
     
     ```go
     type User struct {
-        ID			int `json:"id"`
-        Age 		int `json:"age"`
-        FirstName 	string `json:"first_name"`
-        LastName 	string `json:"last_name"`
-        Email 		string `json:"email"`
+        ID          int `json:"id"`
+        Age         int `json:"age"`
+        FirstName   string `json:"first_name"`
+        LastName    string `json:"last_name"`
+        Email       string `json:"email"`
     }
     ```
     
