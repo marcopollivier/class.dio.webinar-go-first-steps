@@ -26,19 +26,17 @@ ia sendo necessário. Aqui foi exatamente o que fizemos durante o processo:
 
     ```go
     package main
-        
-        import (
-            "fmt"
-            "os"
-        )
-        
-        func main() {
-        
-            var name = os.Args[1]
-        
-            fmt.Println("Hello, " + name)
-        
-        }
+    
+    import (
+        "fmt"
+        "os"
+    )
+    
+    func main() {
+        var name = os.Args[1]
+    
+        fmt.Println("Hello, " + name)
+    }
     ```
    
 4. Depois evoluímos o exemplo para fazer uma espécie de Hello, World em um servidor http. 
@@ -67,92 +65,111 @@ fizemos um método GET para retornar um JSON
     ```go
     package main
     
-        import (
-                "encoding/json"
-                "net/http"
-        )
-    
-        func main() {
-                http.HandleFunc("/clientes", getClientes)
-    
-                http.ListenAndServe(":8080", nil)
-        }
-    
-        func getClientes(w http.ResponseWriter, r *http.Request) {
-                w.Header().Set("Content-Type", "application/json")
-                if r.Method != "GET" {
-                        w.WriteHeader(http.StatusMethodNotAllowed)
-                        return
-                }
-    
-                clientes := Clientes{
-                        Cliente{Name: "Marco"},
-                        Cliente{Name: "Julio"},
-                }
-    
-                json.NewEncoder(w).Encode(clientes)
-        }
-    
-        type Cliente struct {
-                Name string
-        }
-    
-        type Clientes []Cliente
-    ```
-   
-6. E depois fizemos um Método POST 
+    import (
+            "encoding/json"
+            "net/http"
+    )
 
-    ```go
-    func addCliente(w http.ResponseWriter, r *http.Request) {
-        if r.Method != "POST" {
-            http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+    func main() {
+            http.HandleFunc("/clientes", getClientes)
+
+            http.ListenAndServe(":8080", nil)
+    }
+
+    func getClientes(w http.ResponseWriter, r *http.Request){
+        if r.Method != "GET" {
+            w.WriteHeader(http.StatusMethodNotAllowed)
             return
         }
     
-        body, err := ioutil.ReadAll(r.Body)
-        if err != nil {
-            http.Error(w, "Error reading request body",
-                http.StatusInternalServerError)
+        w.Header().Set("Content-type", "application/json")
+    
+        var clientes = Clientes{
+            Cliente{Nome: "Marco"},
+            Cliente{Nome: "Julio"},
         }
     
-        res := Clientes{}
-        json.Unmarshal([]byte(string(body)), &res)
-        fmt.Println(res)
-        fmt.Println(res[0].Name)
+        _ = json.NewEncoder(w).Encode(clientes)
+    }
+
+    type Cliente struct {
+            Name string
+    }
+
+    type Clientes []Cliente
+    ```
+   
+6. E depois fizemos um Método POST. 
+
+    ```go
+    func postCliente(w http.ResponseWriter, r *http.Request){
+    	if r.Method != "POST" {
+    		w.WriteHeader(http.StatusMethodNotAllowed)
+    		return
+    	}
+    
+    	var res = Clientes{}
+    	var body, _ = ioutil.ReadAll(r.Body)
+    	_ = json.Unmarshal(body, &res)
+    
+    	fmt.Println(res)
+    	fmt.Println(res[0].Nome)
+    	fmt.Println(res[1].Nome)
     }
     ```
    
-7. Para completar o 
+7. Para os passos seguintes, nós vamos fazer uma integração com um BD qualquer. 
+Para isso, vamos subir uma imagem Docker do Postgres pra poder fazer o nosso teste. 
 
---- 
-
-
-curl get localhost:3031/brand
-
-BD 5432 diodb postgres
-
-###
-
-
-
-
-
-
-
-
-
-3) fazer algo mais 
-    $ go get -u github.com/lib/pq
-
+    7.1. Vamos subir o BD via Docker Compose
+    
+    host: localhost
+    user: postgres
+    pass: postgres
+    DB: diodb
+    
+    ```yaml
+    version: "3"
+    services:
+      postgres:
+        image: postgres:9.6
+        container_name: "postgres"
+        environment:
+          - POSTGRES_DB=diodb
+          - POSTGRES_USER=postgres
+          - TZ=GMT
+        volumes:
+          - "./data/postgres:/var/lib/postgresql/data"
+        ports:
+          - 5432:5432
+    ```
+   
+   E esse é o script pra criar o DB `diodb`
+   
+   ```sql
     CREATE TABLE users (
         id SERIAL PRIMARY KEY,
         age INT,
         first_name TEXT,
         last_name TEXT,
         email TEXT UNIQUE NOT NULL
-      );
+    );
+    ```
 
-      package main
+
+
+
+
+--- 
+
+
+
+3) fazer algo mais 
+    $ go get -u github.com/lib/pq
+
+
+
+package main
 
 import (
 	"database/sql"

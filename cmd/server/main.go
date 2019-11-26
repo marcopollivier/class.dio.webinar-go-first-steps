@@ -27,11 +27,6 @@ func getClientes(w http.ResponseWriter, r *http.Request){
 
 	w.Header().Set("Content-type", "application/json")
 
-	//var clientes = Clientes{
-	//	Cliente{Nome: "Marco"},
-	//	Cliente{Nome: "Julio"},
-	//}
-
 	var clientes = db()
 
 	_ = json.NewEncoder(w).Encode(clientes)
