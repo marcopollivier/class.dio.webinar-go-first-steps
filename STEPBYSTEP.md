@@ -121,7 +121,7 @@ fizemos um método GET para retornar um JSON
 7. Para os passos seguintes, nós vamos fazer uma integração com um BD qualquer. 
 Para isso, vamos subir uma imagem Docker do Postgres pra poder fazer o nosso teste. 
 
-    7.1. Vamos subir o BD via Docker Compose
+    Vamos subir o BD via Docker Compose
     
     host: localhost
     user: postgres
@@ -144,7 +144,7 @@ Para isso, vamos subir uma imagem Docker do Postgres pra poder fazer o nosso tes
           - 5432:5432
     ```
    
-   E esse é o script pra criar o DB `diodb`
+8. Já com o banco acessível via Docker, vamos criar a base que utilizaremos no nosso teste
    
    ```sql
     CREATE TABLE users (
@@ -156,83 +156,22 @@ Para isso, vamos subir uma imagem Docker do Postgres pra poder fazer o nosso tes
     );
     ```
 
+9. Agora com a estrutra de banco criada, vamos fazer as alterações necessárias no código. E a primeira delas é baixar a
+dependência do driver do Postgres. 
 
+    [Lista de SQLDrivers disponíveis](https://github.com/golang/go/wiki/SQLDrivers) 
 
-
-
---- 
-
-
-
-3) fazer algo mais 
+    Execute o seguinte comando dentro da pasta do projeto 
+    
+    ```shell script
     $ go get -u github.com/lib/pq
+    ```
 
+10. E esse é o código que vai manipular as informações do banco de fato
 
-
-package main
-
-import (
-	"database/sql"
-	"fmt"
-
-	_ "github.com/lib/pq"
-)
-
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "postgres"
-	dbname   = "diodb"
-)
-
-type User struct {
-	ID        int
-	Age       int
-	FirstName string
-	LastName  string
-	Email     string
-}
-
-func main() {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
-	sqlStatement := `SELECT * FROM users WHERE id=$1;`
-	var user User
-	row := db.QueryRow(sqlStatement, 2)
-	err = row.Scan(&user.ID, &user.Age, &user.FirstName,
-		&user.LastName, &user.Email)
-	switch err {
-	case sql.ErrNoRows:
-		fmt.Println("No rows were returned!")
-		return
-	case nil:
-		fmt.Println(user)
-	default:
-		panic(err)
-	}
-}
-
-
-
-
-
-3) INSERINDO
-    package main
-
-    import (
-        "database/sql"
-        "fmt"
-
-        _ "github.com/lib/pq"
-    )
-
+    Crie as constantes de conexão 
+    
+    ```go
     const (
         host     = "localhost"
         port     = 5432
@@ -240,107 +179,54 @@ func main() {
         password = "postgres"
         dbname   = "diodb"
     )
-
-    func main() {
-        psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-            host, port, user, password, dbname)
-        db, err := sql.Open("postgres", psqlInfo)
-        if err != nil {
-            panic(err)
-        }
+    ```
+    
+    A função que será utilizada para fazer a consulta no banco 
+    
+    ```go
+    func db() User {
+        psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+        var db, _ = sql.Open("postgres", psqlInfo)
         defer db.Close()
-
-        sqlStatement := `
-            INSERT INTO users (age, email, first_name, last_name)
-            VALUES ($1, $2, $3, $4)
-            RETURNING id`
-            id := 0
-            err = db.QueryRow(sqlStatement, 30, "jon@calhoun.io", "Jonathan", "Calhoun").Scan(&id)
-            if err != nil {
-                panic(err)
-            }
-            fmt.Println("New record ID is:", id)
+    
+        var sqlStatement = `SELECT * FROM users WHERE id=$1;`
+        var user User
+        var row = db.QueryRow(sqlStatement, 2)
+    
+        _ = row.Scan(&user.ID, &user.Age, &user.FirstName, &user.LastName, &user.Email)
+    
+        fmt.Println(user)
+    
+        return user
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-3) fazer um healthcheck 
-
---- internal/server/http/main.go
-    package http
-
-    import (
-        "github.com/marcopollivier/authorizer/internal/server/http/actuator"
-        "log"
-        "net/http"
-    )
-
-    func Init() {
-        actuator.Health()
-
-        err := http.ListenAndServe(":8080", nil)
-        log.Fatal(err)
+    ```
+    
+    E a struct que você utilizará para fazer o mapeamento com a tabela criada 
+    
+    ```go
+    type User struct {
+        ID			int `json:"id"`
+        Age 		int `json:"age"`
+        FirstName 	string `json:"first_name"`
+        LastName 	string `json:"last_name"`
+        Email 		string `json:"email"`
     }
+    ```
+    
+## Considerações finais
 
---- internal/server/http/actuator/main.go
-    package actuator
+Esse foi o ponto onde chegamos no final da nossa live. Com ele nós conseguimos ver: 
 
-    import (
-        "encoding/json"
-        "net/http"
-    )
+- Como criar um projeto básico em Go 
+- Como fazer um gerenciamento básico de dependências 
+- Como criar um Hello, World
+- Como criar um serviço HTTP simples 
+- Como criar métodos GET e POST no nosso serviço HTTP
+- Como manipular JSON 
+- Como trabalhar com acesso ao BD 
 
-    func Init() {
-    }
+Espero que o material tenha sido proveitoso e que o conteúdo esteja claro. 
 
-    func Health() {
-        http.HandleFunc("/health", healthHandler)
-    }
+Lembre-se que em caso de dúvidas, me procure nas redes. 
 
-    func healthHandler(responseWriter http.ResponseWriter, request *http.Request) {
-        responseWriter.Header().Set("Content-Type", "application/json")
-
-        profile := HealthBody{"alive"}
-
-        returnBody, err := json.Marshal(profile)
-        if err != nil {
-            http.Error(responseWriter, err.Error(), http.StatusInternalServerError)
-            return
-        }
-
-        _, err = responseWriter.Write(returnBody)
-        if err != nil {
-            http.Error(responseWriter, err.Error(), http.StatusInternalServerError)
-            return
-        }
-
-    }
-
-    type HealthBody struct {
-        Status string
-    }
-
---- cmd/server/main.go
-    package main
-
-    import "github.com/marcopollivier/authorizer/internal/server/http"
-
-    func main() {
-
-        http.Init()
-
-    }
+Até mais e bons estudos. 
