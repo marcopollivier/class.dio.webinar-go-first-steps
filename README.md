@@ -1,5 +1,7 @@
 # Introdução a Linguagem de Programação Go - Webinar
 
+![image](https://user-images.githubusercontent.com/697445/132790690-00275d6d-0565-4246-aa18-90305400ae0d.png)
+
 Este projeto foi criado com o objetivo de dar suporte ao Webinar sobre
 [Introdução a linguagem de programação Go](https://www.youtube.com/watch?v=GqpOiSdeNFQ&t=1s)
 
@@ -224,7 +226,9 @@ dependência do driver do Postgres.
     
 ## Considerações finais
 
-Esse foi o ponto onde chegamos no final da nossa live. Com ele nós conseguimos ver: 
+Nessa live partimos de algumas premissas. Algumas delas relacionadas a uma falsa sensação de que Go é uma linguagem complicada de se usar e que só serviria para projetos complexos e até mesmo que seria uma linguagem que não pensa em sua comunidade. E com essas premissas na mesa, o principal objetivo era mostrar que tudo isso são lendas que ganham força, mas que não fazem, necessariamente, sentido. Com isso, mostramos que Go é uma linguagem que, apesar de nova, já oferece recursos bem sofisticados, flexível, simples e performática. Espero que ao final desse material essas características tenham ficado claras para qualquer pessoa, seja iniciante ou não.
+
+E esse foi o ponto onde chegamos no final do nosso encontro. Com ele nós conseguimos ver: 
 
 - Como criar um projeto básico em Go 
 - Como fazer um gerenciamento básico de dependências 
@@ -239,7 +243,6 @@ Espero que o material tenha sido proveitoso e que o conteúdo esteja claro.
 Lembre-se que em caso de dúvidas, me procure nas redes. 
 
 Até mais e bons estudos. 
-
 
 ## Não deixe de tirar duvidas
 
