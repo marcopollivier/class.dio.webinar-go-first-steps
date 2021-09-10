@@ -1,11 +1,11 @@
 # Introdução a Linguagem de Programação Go - Webinar
 
 Este projeto foi criado com o objetivo de dar suporte ao Webinar sobre
-[Introdução a linguagem de programação Go](https://web.digitalinnovation.one/project/0a98bfbf-cf22-4923-8425-38bfa686bc71)
+[Introdução a linguagem de programação Go](https://www.youtube.com/watch?v=GqpOiSdeNFQ&t=1s)
 
 ## Material 
 
-Os slides da apresentação você encontra no [SpeakerDeck](https://speakerdeck.com/marcopollivier/introducao-a-linguagem-de-programacao-go) 
+Os slides da apresentação você encontra no [SpeakerDeck](https://speakerdeck.com/marcopollivier/introducao-a-linguagem-de-programacao-go) e o vídeo você encontra no [YouTube](https://www.youtube.com/watch?v=GqpOiSdeNFQ&t=1s)
 
 ## Conteudo
 
